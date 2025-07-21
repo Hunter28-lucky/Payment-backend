@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 const ALLOWED_ORIGINS = [
   'https://bomboclatmines.vercel.app',
   'https://gateway-nine-eta.vercel.app',
   'http://localhost:5173', // for local dev
 ];
+
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 export async function OPTIONS(req: NextRequest) {
   const origin = req.headers.get('origin') || '';
@@ -32,8 +37,29 @@ export async function POST(req: NextRequest) {
   }
   try {
     const data = await req.json();
-    // Here you would process/store the payment data
-    return new NextResponse(JSON.stringify({ success: true, received: data }), {
+    const { utr_number, mobile_number, screenshot_url, site_id } = data;
+    // Insert payment record into Supabase
+    const { error } = await supabase.from('payments').insert([
+      {
+        utr_number,
+        mobile_number,
+        screenshot_url,
+        site_id,
+        status: 'pending',
+        submitted_at: new Date().toISOString(),
+      },
+    ]);
+    if (error) {
+      return new NextResponse(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Credentials': 'true',
+          'Content-Type': 'application/json',
+        },
+      });
+    }
+    return new NextResponse(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': origin,
