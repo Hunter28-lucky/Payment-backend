@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
     const { utr_number, mobile_number, screenshot_url, site_id } = data;
     // Insert payment record into Supabase
-    const { error } = await supabase.from('payments').insert([
+    const { error, data: insertData } = await supabase.from('payments').insert([
       {
         utr_number,
         mobile_number,
@@ -49,7 +49,10 @@ export async function POST(req: NextRequest) {
         submitted_at: new Date().toISOString(),
       },
     ]);
+    // Log the result and error for debugging
+    console.log('Supabase insert result:', insertData);
     if (error) {
+      console.error('Supabase insert error:', error);
       return new NextResponse(JSON.stringify({ error: error.message }), {
         status: 500,
         headers: {
@@ -68,6 +71,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
+    console.error('API route error:', err);
     return new NextResponse(JSON.stringify({ error: 'Invalid JSON' }), {
       status: 400,
       headers: {
