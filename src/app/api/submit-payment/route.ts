@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 const ALLOWED_ORIGINS = [
   'https://bomboclatmines.vercel.app',
   'https://gateway-nine-eta.vercel.app',
+  'https://minesbomboclat.netlify.app', // Netlify frontend
   'http://localhost:5173', // for local dev
 ];
 
