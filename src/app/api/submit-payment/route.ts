@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const ALLOWED_ORIGINS = [
   'https://bomboclatmines.vercel.app',
+  'https://bomboclatmines-a9fy.vercel.app', // <-- Add this line
   'https://gateway-nine-eta.vercel.app',
   'https://minesbomboclat.netlify.app', // Netlify frontend
   'http://localhost:5173', // for local dev
@@ -82,4 +83,4 @@ export async function POST(req: NextRequest) {
       },
     });
   }
-} 
+}
